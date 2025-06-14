@@ -8,7 +8,6 @@ rm(list=ls())
 ###############################################
 ###############################################
 
-
 library(DBI)
 library(duckdb)
 library(dplyr)
@@ -44,7 +43,7 @@ transaction_data <- tbl(conn_ddb, "transaction_data")
 # Define variables used in the models
 ###############################################
 
-variables <- c(
+model_variables <- c(
   "anneemut",                          "moismut",                           "jannath",                          
   "x",                                 "y",                                 "dnbniv",                           
   "dnbbai",                            "dnbdou",                            "dnblav",                           
@@ -75,6 +74,8 @@ transaction_data_flats_paris <- transaction_data |>
 # The holdout set contains 20% of the data, randomly chosen
 holdout_set <- transaction_data_flats_paris |>
   filter(random_number >= 0.8) |> 
+  mutate(holdout = NA) |>
+  select(all_of(model_variables)) |>
   collect()
 
 ###############################################
@@ -89,6 +90,7 @@ holdout_set <- transaction_data_flats_paris |>
 dbase   <- transaction_data_flats_paris |>
   filter(random_number < 0.8) |> 
   mutate(holdout = (random_number > 0.6)) |>
+  select(all_of(model_variables)) |>
   collect()
 dtaname <- "flats_paris"
 
