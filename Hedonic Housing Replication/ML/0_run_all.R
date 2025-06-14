@@ -53,7 +53,9 @@ transaction_data_flats_paris <- transaction_data |>
   compute("transaction_data_flats_paris", temporary = FALSE, overwrite = TRUE)
 
 # The holdout set contains 20% of the data, randomly chosen
-holdout_set <- transaction_data_flats_paris |> filter(random >= 0.8) |> collect()
+holdout_set <- transaction_data_flats_paris |>
+  filter(random_number >= 0.8) |> 
+  collect()
 
 ###############################################
 ###############################################
@@ -64,7 +66,10 @@ holdout_set <- transaction_data_flats_paris |> filter(random >= 0.8) |> collect(
 ###############################################
 
 # The training data (dbase) contains the other 80% of the data
-dbase   <- transaction_data_flats_paris |> filter(random < 0.8) |> collect()
+dbase   <- transaction_data_flats_paris |>
+  filter(random_number < 0.8) |> 
+  mutate(holdout = (random_number > 0.6)) |>
+  collect()
 dtaname <- "flats_paris"
 
 source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/1_dataprep.R")
