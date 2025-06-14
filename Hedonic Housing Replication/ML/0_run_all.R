@@ -1,5 +1,14 @@
 rm(list=ls())
 
+###############################################
+###############################################
+###############################################
+# Addition to the original script
+###############################################
+###############################################
+###############################################
+
+
 library(DBI)
 library(duckdb)
 library(dplyr)
@@ -38,20 +47,25 @@ transaction_data <- tbl(conn_ddb, "transaction_data")
 # Load data on flats sold in Paris and define the target
 transaction_data_flats_paris <- transaction_data |>
   filter(ccodep == "75" & dteloc == "2") |>
-  mutate(log_price_sqm = log(valeurfonc / dsupdc)) |>
+  # The target is the log of price per sqm. I use the name "l_km2pris" to minimize changes in other codes.
+  mutate(l_km2pris = log(valeurfonc / dsupdc)) |>
   mutate(random_number = random()) |>
   compute("transaction_data_flats_paris", temporary = FALSE, overwrite = TRUE)
 
 # The holdout set contains 20% of the data, randomly chosen
 holdout_set <- transaction_data_flats_paris |> filter(random >= 0.8) |> collect()
 
+###############################################
+###############################################
+###############################################
+# Code from the original script
+###############################################
+###############################################
+###############################################
+
 # The training data (dbase) contains the other 80% of the data
 dbase   <- transaction_data_flats_paris |> filter(random < 0.8) |> collect()
 dtaname <- "flats_paris"
-
-###############################################
-# Train the models
-###############################################
 
 source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/1_dataprep.R")
 source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/2_fitmodel.R")
