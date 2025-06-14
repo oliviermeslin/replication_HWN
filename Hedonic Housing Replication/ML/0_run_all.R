@@ -35,8 +35,10 @@ transaction_data <- tbl(conn_ddb, "transaction_data")
 # Define the dataset and build the holdout set
 ###############################################
 
+# Load data on flats sold in Paris and define the target
 transaction_data_flats_paris <- transaction_data |>
   filter(ccodep == "75" & dteloc == "2") |>
+  mutate(log_price_sqm = log(valeurfonc / dsupdc)) |>
   mutate(random_number = random()) |>
   compute("transaction_data_flats_paris", temporary = FALSE, overwrite = TRUE)
 
