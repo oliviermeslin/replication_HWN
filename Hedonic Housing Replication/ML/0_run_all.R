@@ -41,12 +41,32 @@ dbExecute(
 transaction_data <- tbl(conn_ddb, "transaction_data")
 
 ###############################################
+# Define variables used in the models
+###############################################
+
+variables <- c(
+  "anneemut",                          "moismut",                           "jannath",                          
+  "x",                                 "y",                                 "dnbniv",                           
+  "dnbbai",                            "dnbdou",                            "dnblav",                           
+  "dnbwc",                             "dnbppr",                            "dnbsam",                           
+  "dnbcha",                            "dnbcu8",                            "dnbcu9",                           
+  "dnbsea",                            "dnbann",                            "dnbpdc",                           
+  "dsupdc",                            "geaulc",                            "gelelc",                           
+  "gesclc",                            "ggazlc",                            "gasclc",                           
+  "gchclc",                            "gvorlc",                            "gteglc",                           
+  "dniv",                              "nb_garages",                       
+  "nb_piscines",                       "nb_terrasses",                      "nb_greniers",                      
+  "nb_caves",                          "nb_autresdep",                      "holdout",
+  "l_km2pris"
+)
+
+###############################################
 # Define the dataset and build the holdout set
 ###############################################
 
 # Load data on flats sold in Paris and define the target
 transaction_data_flats_paris <- transaction_data |>
-  filter(ccodep == "75" & dteloc == "2") |>
+  filter(ccodep == "75" & dteloc == "2" & libnatmut == "Vente") |>
   # The target is the log of price per sqm. I use the name "l_km2pris" to minimize changes in other codes.
   mutate(l_km2pris = log(valeurfonc / dsupdc)) |>
   mutate(random_number = random()) |>
