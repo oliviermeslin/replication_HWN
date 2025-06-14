@@ -13,20 +13,20 @@ instruction <- list(df=rawdata$df,settings=list(LHS="l_km2pris",RHS=rawdata$vars
 
 # Load prediction algorithms
 #source("/ssb/stamme01/wealth5/prog/rek/prepare/housing/ml/predictiontools/algo_boosting.R")  # Boosted tree
-source("/ssb/stamme01/wealth5/prog/rek/prepare/housing/ml/predictiontools/algo_linear.R")  # OLS et al.
-source("/ssb/stamme01/wealth5/prog/rek/prepare/housing/ml/predictiontools/algo_penalizedlinear.R")  # Elastic net (incl. LASSO)
-source("/ssb/stamme01/wealth5/prog/rek/prepare/housing/ml/predictiontools/algo_randomforest.R")  # Random forest
-source("/ssb/stamme01/wealth5/prog/rek/prepare/housing/ml/predictiontools/algo_tree.R")  # Regression tree
+source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/predictiontools/algo_linear.R")  # OLS et al.
+source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/predictiontools/algo_penalizedlinear.R")  # Elastic net (incl. LASSO)
+source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/predictiontools/algo_randomforest.R")  # Random forest
+source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/predictiontools/algo_tree.R")  # Regression tree
 
 # Load tools
-source("/ssb/stamme01/wealth5/prog/rek/prepare/housing/ml/predictiontools/tool_analysis.R")  # Prediction output analysis
-source("/ssb/stamme01/wealth5/prog/rek/prepare/housing/ml/predictiontools/tool_dataprep.R")  # Data preparation
-source("/ssb/stamme01/wealth5/prog/rek/prepare/housing/ml/predictiontools/tool_prediction.R")  # Main prediction analysis routine
-source("/ssb/stamme01/wealth5/prog/rek/prepare/housing/ml/predictiontools/tool_predictionhelpers.R")  # Tuning and ensemble tools
+source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/predictiontools/tool_analysis.R")  # Prediction output analysis
+source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/predictiontools/tool_dataprep.R")  # Data preparation
+source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/predictiontools/tool_prediction.R")  # Main prediction analysis routine
+source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/predictiontools/tool_predictionhelpers.R")  # Tuning and ensemble tools
 
 # Load interface
-source("/ssb/stamme01/wealth5/prog/rek/prepare/housing/ml/predictiontools/interface_predictiveanalysis.R")  # Main interface for local analysis of ensembles
-source("/ssb/stamme01/wealth5/prog/rek/prepare/housing/ml/predictiontools/interface_serverparallel.R")  # Additional tools for manual parallelization
+source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/predictiontools/interface_predictiveanalysis.R")  # Main interface for local analysis of ensembles
+source("/home/onyxia/work/replication_HWN/Hedonic Housing Replication/ML/predictiontools/interface_serverparallel.R")  # Additional tools for manual parallelization
 
 
 # Fit models
