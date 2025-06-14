@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Contruct xgb.DMatrix object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for xgb.DMatrix {xgboost}"><tr><td>xgb.DMatrix {xgboost}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Contruct xgb.DMatrix object</h2>
+
+<h3>Description</h3>
+
+<p>Contruct xgb.DMatrix object from dense matrix, sparse matrix 
+or local file (that was created previously by saving an <code>xgb.DMatrix</code>).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+xgb.DMatrix(data, info = list(), missing = NA, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+<p>a <code>matrix</code> object, a <code>dgCMatrix</code> object or a character representing a filename</p>
+</td></tr>
+<tr valign="top"><td><code>info</code></td>
+<td>
+<p>a list of information of the xgb.DMatrix object</p>
+</td></tr>
+<tr valign="top"><td><code>missing</code></td>
+<td>
+<p>Missing is only used when input is dense matrix, pick a float
+value that represents missing value. Sometime a data use 0 or other extreme value to represents missing values.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>other information to pass to <code>info</code>.</p>
+</td></tr>
+</table>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(agaricus.train, package='xgboost')
+train &lt;- agaricus.train
+dtrain &lt;- xgb.DMatrix(train$data, label=train$label)
+xgb.DMatrix.save(dtrain, 'xgb.DMatrix.data')
+dtrain &lt;- xgb.DMatrix('xgb.DMatrix.data')
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>xgboost</em> version 0.6.4.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

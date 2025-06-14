@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Predict method for eXtreme Gradient Boosting model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for predict.xgb.Booster {xgboost}"><tr><td>predict.xgb.Booster {xgboost}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Predict method for eXtreme Gradient Boosting model</h2>
+
+<h3>Description</h3>
+
+<p>Predicted values based on either xgboost model or model handle object.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'xgb.Booster'
+predict(object, newdata, missing = NA,
+  outputmargin = FALSE, ntreelimit = NULL, predleaf = FALSE,
+  reshape = FALSE, ...)
+
+## S3 method for class 'xgb.Booster.handle'
+predict(object, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+<p>Object of class <code>xgb.Booster</code> or <code>xgb.Booster.handle</code></p>
+</td></tr>
+<tr valign="top"><td><code>newdata</code></td>
+<td>
+<p>takes <code>matrix</code>, <code>dgCMatrix</code>, local data file or <code>xgb.DMatrix</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>missing</code></td>
+<td>
+<p>Missing is only used when input is dense matrix. Pick a float value that represents
+missing values in data (e.g., sometimes 0 or some other extreme value is used).</p>
+</td></tr>
+<tr valign="top"><td><code>outputmargin</code></td>
+<td>
+<p>whether the prediction should be returned in the for of original untransformed 
+sum of predictions from boosting iterations' results. E.g., setting <code>outputmargin=TRUE</code> for 
+logistic regression would result in predictions for log-odds instead of probabilities.</p>
+</td></tr>
+<tr valign="top"><td><code>ntreelimit</code></td>
+<td>
+<p>limit the number of model's trees or boosting iterations used in prediction (see Details).
+It will use all the trees by default (<code>NULL</code> value).</p>
+</td></tr>
+<tr valign="top"><td><code>predleaf</code></td>
+<td>
+<p>whether predict leaf index instead.</p>
+</td></tr>
+<tr valign="top"><td><code>reshape</code></td>
+<td>
+<p>whether to reshape the vector of predictions to a matrix form when there are several 
+prediction outputs per case. This option has no effect when <code>predleaf = TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>Parameters passed to <code>predict.xgb.Booster</code></p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>Note that <code>ntreelimit</code> is not necessarily equal to the number of boosting iterations
+and it is not necessarily equal to the number of trees in a model.
+E.g., in a random forest-like model, <code>ntreelimit</code> would limit the number of trees.
+But for multiclass classification, there are multiple trees per iteration, 
+but <code>ntreelimit</code> limits the number of boosting iterations.
+</p>
+<p>Also note that <code>ntreelimit</code> would currently do nothing for predictions from gblinear, 
+since gblinear doesn't keep its boosting history. 
+</p>
+<p>One possible practical applications of the <code>predleaf</code> option is to use the model 
+as a generator of new features which capture non-linearity and interactions, 
+e.g., as implemented in <code><a href="xgb.create.features.html">xgb.create.features</a></code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>For regression or binary classification, it returns a vector of length <code>nrows(newdata)</code>.
+For multiclass classification, either a <code>num_class * nrows(newdata)</code> vector or 
+a <code>(nrows(newdata), num_class)</code> dimension matrix is returned, depending on 
+the <code>reshape</code> value.
+</p>
+<p>When <code>predleaf = TRUE</code>, the output is a matrix object with the 
+number of columns corresponding to the number of trees.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="xgb.train.html">xgb.train</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## binary classification:
+
+data(agaricus.train, package='xgboost')
+data(agaricus.test, package='xgboost')
+train &lt;- agaricus.train
+test &lt;- agaricus.test
+
+bst &lt;- xgboost(data = train$data, label = train$label, max_depth = 2, 
+               eta = 1, nthread = 2, nrounds = 2, objective = "binary:logistic")
+# use all trees by default
+pred &lt;- predict(bst, test$data)
+# use only the 1st tree
+pred &lt;- predict(bst, test$data, ntreelimit = 1)
+
+
+## multiclass classification in iris dataset:
+
+lb &lt;- as.numeric(iris$Species) - 1
+num_class &lt;- 3
+set.seed(11)
+bst &lt;- xgboost(data = as.matrix(iris[, -5]), label = lb,
+               max_depth = 4, eta = 0.5, nthread = 2, nrounds = 10, subsample = 0.5,
+               objective = "multi:softprob", num_class = num_class)
+# predict for softmax returns num_class probability numbers per case:
+pred &lt;- predict(bst, as.matrix(iris[, -5]))
+str(pred)
+# reshape it to a num_class-columns matrix
+pred &lt;- matrix(pred, ncol=num_class, byrow=TRUE)
+# convert the probabilities to softmax labels
+pred_labels &lt;- max.col(pred) - 1
+# the following should result in the same error as seen in the last iteration
+sum(pred_labels != lb)/length(lb)
+
+# compare that to the predictions from softmax:
+set.seed(11)
+bst &lt;- xgboost(data = as.matrix(iris[, -5]), label = lb,
+               max_depth = 4, eta = 0.5, nthread = 2, nrounds = 10, subsample = 0.5,
+               objective = "multi:softmax", num_class = num_class)
+pred &lt;- predict(bst, as.matrix(iris[, -5]))
+str(pred)
+all.equal(pred, pred_labels)
+# prediction from using only 5 iterations should result 
+# in the same error as seen in iteration 5:
+pred5 &lt;- predict(bst, as.matrix(iris[, -5]), ntreelimit=5)
+sum(pred5 != lb)/length(lb)
+
+
+## random forest-like model of 25 trees for binary classification:
+
+set.seed(11)
+bst &lt;- xgboost(data = train$data, label = train$label, max_depth = 5,
+               nthread = 2, nrounds = 1, objective = "binary:logistic",
+               num_parallel_tree = 25, subsample = 0.6, colsample_bytree = 0.1)
+# Inspect the prediction error vs number of trees:
+lb &lt;- test$label
+dtest &lt;- xgb.DMatrix(test$data, label=lb)
+err &lt;- sapply(1:25, function(n) {
+  pred &lt;- predict(bst, dtest, ntreelimit=n)
+  sum((pred &gt; 0.5) != lb)/length(lb)
+})
+plot(err, type='l', ylim=c(0,0.1), xlab='#trees')
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>xgboost</em> version 0.6.4.1 <a href="00Index.html">Index</a>]</div>
+</body></html>
